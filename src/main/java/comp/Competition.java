@@ -1,7 +1,5 @@
 package comp;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,12 +17,15 @@ public class Competition {
     }
 
     private void writeData(List<String> data, String outputFileName) throws URISyntaxException, IOException {
+        writeData(data, outputFileName, true);
+    }
+
+    private void writeData(List<String> data, String outputFileName, boolean newLineAfterEachEntry) throws URISyntaxException, IOException {
         Path path = Paths.get(getUri(outputFileName));
         clearFile(path);
         data.forEach(e -> {
             try {
-                Files.write(path, e.getBytes(), StandardOpenOption.APPEND);
-                Files.write(path, "\n".getBytes(), StandardOpenOption.APPEND);
+                Files.write(path, getDataWithSpace(e, newLineAfterEachEntry).getBytes(), StandardOpenOption.APPEND);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -33,11 +34,14 @@ public class Competition {
         System.out.println("Data written to " + path.toUri().getPath());
     }
 
+    private String getDataWithSpace(String data, boolean newLineAfterEachEntry) {
+        return newLineAfterEachEntry? data + "\n" : data;
+    }
+
     private void clearFile(Path path) throws IOException {
         Files.write(path, "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    @NotNull
     private List<String> readData(String inputFileName) throws URISyntaxException, IOException {
         Path uri = Paths.get(getUri(inputFileName));
 
@@ -48,12 +52,12 @@ public class Competition {
         return data;
     }
 
-    @NotNull
     private URI getUri(String inputFileName) throws URISyntaxException {
         return getClass().getClassLoader().getResource(inputFileName).toURI();
     }
 
     private List<String> processInputData(List<String> data) {
+        //Replace this with competition related logic
         return new ArrayList<>(data);
     }
 }
