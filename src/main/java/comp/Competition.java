@@ -74,17 +74,51 @@ public class Competition {
 
     private List<String> processImages(List<Images> imagesList) {
         List<String> result = new ArrayList<>();
+        Collections.sort(result);
+
         for (Images image : imagesList) {
-            long occurence = processImage(image);
-            if (occurence != -1)
-            {
-                result.add(String.valueOf(occurence));
-            }
+            image.processShape();
+//            long occurence = processImage(image);
+//            if (occurence != -1)
+//            {
+//                result.add(String.valueOf(occurence));
+//            }
         }
 
-        Collections.sort(result);
-         return result;
+        long firstOccurence = -1;
+        long lastOccurence = -1;
+        long match = 0;
+        List<String> triplets = new ArrayList<>();
+        for (int i = 0; i < imagesList.size(); i++) {
+            match = 0;
+            firstOccurence = -1;
+            lastOccurence = -1;
+            for (int i1 = i; i1 < imagesList.size(); i1++) {
+                if (!imagesList.get(i1).shape.processed && imagesList.get(i).equalsImage(imagesList.get(i1)))
+                {
+                    if (i != i1)
+                    {
+                        imagesList.get(i1).shape.processed = true;
+                    }
+                    match++;
+                    if (firstOccurence == -1)
+                    {
+                        firstOccurence = imagesList.get(i).getTimestamp();
+                    }
 
+                    lastOccurence = imagesList.get(i1).getTimestamp();
+                }
+            }
+
+            if (firstOccurence != -1 && lastOccurence != -1){
+                triplets.add("" + firstOccurence + " " + lastOccurence + " " + match);
+
+            }
+
+            imagesList.get(i).shape.processed = true;
+        }
+
+         return triplets;
     }
 
     private long processImage(Images image) {
