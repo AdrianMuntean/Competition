@@ -68,8 +68,6 @@ public class Competition {
 
         List<Images> imagesList = readImages(imageCount, data);
         return processImages(imagesList);
-
-//        return new ArrayList<>(data);
     }
 
     private List<String> processImages(List<Images> imagesList) {
@@ -94,31 +92,55 @@ public class Competition {
             firstOccurence = -1;
             lastOccurence = -1;
             for (int i1 = i; i1 < imagesList.size(); i1++) {
-                if (!imagesList.get(i1).shape.processed && imagesList.get(i).equalsImage(imagesList.get(i1)))
+                if (imagesList.get(i).equalsImage(imagesList.get(i1)))
                 {
                     if (i != i1)
                     {
                         imagesList.get(i1).shape.processed = true;
                     }
                     match++;
-                    if (firstOccurence == -1)
-                    {
-                        firstOccurence = imagesList.get(i).getTimestamp();
+//                    if (firstOccurence == -1)
+//                    {
+//                        firstOccurence = imagesList.get(i).getTimestamp();
+//                    }
+//
+//                    lastOccurence = imagesList.get(i1).getTimestamp();
+                    long timestamp1 = imagesList.get(i).getTimestamp();
+                    long timestamp2 = imagesList.get(i1).getTimestamp();
+                    long diff = timestamp2 - timestamp1;
+
+                    if (diff != 0) {
+
+                    if (getByTimestamp(imagesList, timestamp2 + diff).equalsImage(imagesList.get(i1)))
+                        if (getByTimestamp(imagesList, timestamp2 + 2 * diff).equalsImage(imagesList.get(i1))) {
+//                            System.out.println((timestamp2 - diff) + " " + (timestamp2 + 2 * diff) + " " + (match + 1));
+                            triplets.add("" + (timestamp2 - diff) + " " + (timestamp2 + 2 * diff) + " " + (match + 1));
+                        }
                     }
-
-                    lastOccurence = imagesList.get(i1).getTimestamp();
                 }
-            }
-
-            if (firstOccurence != -1 && lastOccurence != -1){
-                triplets.add("" + firstOccurence + " " + lastOccurence + " " + match);
 
             }
+
+//            if (firstOccurence != -1 && lastOccurence != -1){
+//                triplets.add("" + firstOccurence + " " + lastOccurence + " " + match);
+//
+//            }
 
             imagesList.get(i).shape.processed = true;
         }
 
          return triplets;
+    }
+
+    private Images getByTimestamp(List<Images> imagesList, long timestamp) {
+        for (Images images : imagesList) {
+            if (images.getTimestamp() == timestamp)
+            {
+                return images;
+            }
+        }
+
+        return new Images(0, 0, 0);
     }
 
     private long processImage(Images image) {
